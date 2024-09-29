@@ -4,35 +4,43 @@ using UnityEngine;
 
 public class PlatformSpawner : MonoBehaviour
 {
-    public GameObject[] platforms;
-    public Transform[] spawnPoints;
-    public GameObject enemyPrefab;
+    public GameObject[] platformsPrefabs;    
+    public Transform[]  platformSpawnPoints;
+    [SerializeField, Range(0f, 1f), Tooltip("Platform spawn rate as a percentage. Value between 0 (0%) and 1 (100%).")] 
+    float platformRate;
+
+    public GameObject[]   enemyPrefabs;
+    public Transform[]    enemySpawnPoints;
+    [SerializeField, Range(0f, 1f), Tooltip("Enemy spawn rate as a percentage. Value between 0 (0%) and 1 (100%).")] 
+    float enemyRate;
+    
 
     void Start()
     {
-        SpawnPlatforms();
+        //SpawnPlatforms();
         SpawnEnemies();
     }
 
     void SpawnPlatforms()
     {
-        foreach (Transform spawnPoint in spawnPoints)
+        foreach (Transform spawnPoint in platformSpawnPoints)
         {
-            if (Random.value > 0.5f)
+            if (Random.value <= platformRate)
             {
-                int randomIndex = Random.Range(0, platforms.Length);
-                Instantiate(platforms[randomIndex], spawnPoint.position, Quaternion.identity);
+                int randomIndex = Random.Range(0, platformsPrefabs.Length);
+                Instantiate(platformsPrefabs[randomIndex], spawnPoint.position, Quaternion.identity);
             }
         }
     }
 
     void SpawnEnemies()
     {
-        foreach (Transform spawnPoint in spawnPoints)
+        foreach (Transform spawnPoint in enemySpawnPoints)
         {
-            if (Random.value > 0.7f)
+            if (Random.value <= enemyRate)
             {
-                Instantiate(enemyPrefab, spawnPoint.position + new Vector3(0, 1, 0), Quaternion.identity);
+                int randomIndex = Random.Range(0, enemyPrefabs.Length);
+                Instantiate(enemyPrefabs[randomIndex], spawnPoint.position, Quaternion.identity);
             }
         }
     }

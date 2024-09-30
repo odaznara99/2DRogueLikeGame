@@ -26,6 +26,10 @@ public class HeroKnight : MonoBehaviour {
     private float               m_rollDuration = 8.0f / 14.0f;
     private float               m_rollCurrentTime;
 
+    //Attack Variables
+    public float                attackRange = 2f; // Player's attack range
+    public int                  attackDamage = 20;
+    public float                attackCooldown = 1f; // Time between attacks
 
     // Use this for initialization
     void Start ()
@@ -109,21 +113,7 @@ public class HeroKnight : MonoBehaviour {
         //Attack
         else if(Input.GetMouseButtonDown(0) && m_timeSinceAttack > 0.25f && !m_rolling)
         {
-            m_currentAttack++;
-
-            // Loop back to one after third attack
-            if (m_currentAttack > 3)
-                m_currentAttack = 1;
-
-            // Reset Attack combo if time since last attack is too large
-            if (m_timeSinceAttack > 1.0f)
-                m_currentAttack = 1;
-
-            // Call one of three attack animations "Attack1", "Attack2", "Attack3"
-            m_animator.SetTrigger("Attack" + m_currentAttack);
-
-            // Reset timer
-            m_timeSinceAttack = 0.0f;
+            Attack();
         }
 
         // Block
@@ -171,6 +161,47 @@ public class HeroKnight : MonoBehaviour {
                 if(m_delayToIdle < 0)
                     m_animator.SetInteger("AnimState", 0);
         }
+    }
+
+    void Attack() {
+
+        if (m_timeSinceAttack > 0.25f && !m_rolling)
+        {
+            // Find all nearby enemies within the attack range
+            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange);
+
+            foreach (Collider2D enemy in hitEnemies)
+            {
+                if (enemy.CompareTag("Enemy")) // Assuming enemy objects have the "Enemy" tag
+                {
+                    // Apply damage to the enemy
+                    enemy.GetComponent<Bandit>().TakeDamage(attackDamage);
+                }
+            }
+
+            m_currentAttack++;
+
+            // Loop back to one after third attack
+            if (m_currentAttack > 3)
+                m_currentAttack = 1;
+
+            // Reset Attack combo if time since last attack is too large
+            if (m_timeSinceAttack > 1.0f)
+                m_currentAttack = 1;
+
+            // Call one of three attack animations "Attack1", "Attack2", "Attack3"
+            m_animator.SetTrigger("Attack" + m_currentAttack);
+
+            // Reset timer
+            m_timeSinceAttack = 0.0f;
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        // Draw the attack range when the player is selected in the editor
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 
     // Animation Events

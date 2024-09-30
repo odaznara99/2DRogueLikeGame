@@ -35,6 +35,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4269114208525818}
+  - {fileID: 8207164269522517271}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114850797635947820
@@ -51,10 +52,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_jumpForce: 0
   player: {fileID: 0}
-  moveSpeed: 2
-  followRange: 4
-  attackRange: 1.5
-  attackCooldown: 1
+  attackPoint: {fileID: 8207164269522517271}
+  moveSpeed: 1.5
+  followRange: 3
+  attackRange: 0.9
+  attackCooldown: 5
   health: 100
   damage: 10
 --- !u!95 &95346456782871180
@@ -146,7 +148,7 @@ Rigidbody2D:
   m_LinearDrag: 0.5
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 9c497a4ce1f356b448c0dd3eca091d35, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -166,7 +168,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 1689866831511430}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 9c497a4ce1f356b448c0dd3eca091d35, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -189,7 +191,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.02, y: 0.662}
+  m_Offset: {x: 0.004929453, y: 0.66200006}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -200,7 +202,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.8, y: 1.2}
+  m_Size: {x: 0.5174665, y: 1.2}
   m_EdgeRadius: 0
 --- !u!1 &1943394156383696
 GameObject:
@@ -292,3 +294,34 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.16, y: 0.03}
   m_EdgeRadius: 0
+--- !u!1 &6020638010057669250
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8207164269522517271}
+  m_Layer: 0
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8207164269522517271
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6020638010057669250}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4805181885227780}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

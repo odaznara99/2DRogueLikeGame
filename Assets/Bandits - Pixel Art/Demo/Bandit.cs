@@ -13,31 +13,36 @@ public class Bandit : MonoBehaviour {
     private bool                m_combatIdle = false;
     private bool                m_isDead = false;
 
-    //Added: Odaz 09/29/2024
-    public Transform player; // Reference to the player
+    //Added: Odaz 09/29/2024    
     public Transform attackPoint; // Attach this to a point in the scene or a child of the enemy
     public float     moveSpeed = 2f; // Speed of the enemy
     public float     followRange = 10f; // Range in which the enemy follows the player
     public float     attackRange = 1.5f; // Range in which the enemy attacks the player    
     public float     attackCooldown = 1f; // Time between attacks
+    public float     attackTiming = 0.5f; // Timing the end of Attack Animation
     public int       health = 100; // Health of the enemy
     public int       damage = 10; // Damage dealt to the player
 
-    private float   lastAttackTime = 0f; // Track when the enemy last attacked
-    private bool    isAttacking; // Track if the enemy is currently attacking
-    private bool    isFacingRight = false; // Track which direction the enemy is facing
+    private Transform   player; // Reference to the player position
+    private HeroKnight  playerScript; // Reference to the player main script
+    private float       lastAttackTime = 0f; // Track when the enemy last attacked
+    private bool        isAttacking = false; // Track if the enemy is currently attacking
+    private bool        isFacingRight = false; // Track which direction the enemy is facing
+    private bool        isHurting = false; // Track when the bandit is being Hurt
+
+    
 
 
     // Use this for initialization
     void Start () {
-        m_animator = GetComponent<Animator>();
-        m_body2d = GetComponent<Rigidbody2D>();
-        m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor_Bandit>();
+        m_animator      = GetComponent<Animator>();
+        m_body2d        = GetComponent<Rigidbody2D>();
+        m_groundSensor  = transform.Find("GroundSensor").GetComponent<Sensor_Bandit>();
 
-        player = GameObject.Find("HeroKnight").GetComponent<Transform>();
-        attackPoint = transform.Find("AttackPoint").GetComponent<Transform>();
-
-
+        playerScript    = GameObject.Find("HeroKnight").GetComponent<HeroKnight>();
+        player          = GameObject.Find("HeroKnight").GetComponent<Transform>();
+        attackPoint     = transform.Find("AttackPoint").GetComponent<Transform>();
+        lastAttackTime  = Time.time - attackCooldown;
     }
 	
 	// Update is called once per frame
@@ -60,33 +65,47 @@ public class Bandit : MonoBehaviour {
 
         // Calculate the distance between the enemy and the attack point
         float distanceToAttackPoint = Vector2.Distance(attackPoint.position, player.position);
-        if (!m_isDead)
+
+        if (!m_isDead && !isHurting && !playerScript.playerIsDead)
         {
+            //Follow Player
             if (distanceToPlayer <= followRange && distanceToAttackPoint > attackRange)
             {
                 FollowPlayer();
                 //m_combatIdle = true;
             }
+            //Player Out of Range
             else
             {
                 // Stop moving if outside the follow range or too close (attack range)
-                m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
+                StopMovingHorizontally();
                 m_combatIdle = false;
             }
 
+            //Attack the Player on Range
             if (distanceToPlayer <= attackRange)
             {
-                m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
                 m_combatIdle = true;
-                AttackPlayer();
+                StopMovingHorizontally();
+
+                if (!isAttacking)
+                {
+                    StartCoroutine(AttackPlayer());
+                }
             }
         }
-        else 
-        { 
-            m_body2d.velocity = new Vector2(0, m_body2d.velocity.y); 
+        //Player is Dead
+        else if (playerScript.playerIsDead) 
+        {
+            m_combatIdle = false;
         }
-
-        FlipSpriteBasedOnVelocity(); // Update sprite direction based on movement
+        //Enemy is Dead
+        else
+        {
+            StopMovingHorizontally();
+        }
+        // Update sprite direction based on movement
+        FlipSpriteBasedOnVelocity(); 
 
         //Check if character just landed on the ground
         if (!m_grounded && m_groundSensor.State()) {
@@ -163,27 +182,36 @@ public class Bandit : MonoBehaviour {
     }
 
     // Method to attack the player
-    void AttackPlayer()
+    IEnumerator AttackPlayer()
     {
         if (Time.time >= lastAttackTime + attackCooldown)
         {
+            isAttacking = true;
             m_animator.SetTrigger("Attack");
-            // You can call a player script here to reduce the player's health
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-            Animator playerAnimator = player.GetComponent<Animator>();
-            if (playerHealth != null)
+
+            // Assuming you want to wait for the animation to reach a certain point before applying damage
+            yield return new WaitForSeconds(attackTiming); // Adjust this timing as per your animation
+
+            // Reference to Player Health
+            PlayerHealth    playerHealth        = player.GetComponent<PlayerHealth>();
+
+            if (playerHealth != null && !isHurting && !m_isDead)
             {
-                playerAnimator.SetTrigger("Hurt");
-                playerHealth.TakeDamage(damage);
+                Debug.Log("Enemy: Attacks the player!");
+                playerHealth.TakeDamage(damage);               
+            }
+            else
+            {
+                Debug.Log("Enemy: Attack was Interrupted!");
             }
 
-            lastAttackTime = Time.time; // Update the time of the last attack
-            Debug.Log("Enemy attacks the player!");
+            lastAttackTime = Time.time; // Update the time of the last attack           
+            isAttacking = false;
         }
     }
 
     // Method to receive damage when attacked by the player
-    public void TakeDamage(int damageAmount)
+    public IEnumerator TakeDamage(int damageAmount)
     {
         m_animator.SetTrigger("Hurt");
         health -= damageAmount;
@@ -194,8 +222,13 @@ public class Bandit : MonoBehaviour {
         }
         else
         {
-            m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
+            isHurting = true;           
+            StopMovingHorizontally();
+            StopCoroutine(AttackPlayer());
             Debug.Log("Enemy took " + damageAmount + " damage! Remaining health: " + health);
+            //Duration when the Enemy will be on Hurt State
+            yield return new WaitForSeconds(1f);
+            isHurting = false;
         }
     }
 
@@ -252,5 +285,9 @@ public class Bandit : MonoBehaviour {
         Vector3 localScale = transform.localScale;
         localScale.x *= -1; // Reverse the scale on X-axis
         transform.localScale = localScale;
+    }
+
+    void StopMovingHorizontally() {
+        m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
     }
 }

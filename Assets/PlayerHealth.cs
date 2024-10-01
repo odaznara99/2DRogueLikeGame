@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 100; // The maximum health the player can have
-    private int currentHealth;  // The player's current health
+    private HeroKnight      player; //Reference to player script
+    private Animator        playerAnimator; //Reference to player animator
+    public  int             maxHealth = 100; // The maximum health the player can have
+    private int             currentHealth;  // The player's current health
 
     // Start is called before the first frame update
     void Start()
@@ -13,27 +15,53 @@ public class PlayerHealth : MonoBehaviour
         // Initialize the player's health to the maximum at the start
         currentHealth = maxHealth;
         UpdateHealthUI(); // If you have a UI to display health, update it here
+
+        player          = this.GetComponent<HeroKnight>();
+        playerAnimator  = this.GetComponent<Animator>();
     }
 
     // Method to handle taking damage
     public void TakeDamage(int damageAmount)
     {
-        currentHealth -= damageAmount;
-
-        // Make sure health doesn't go below zero
-        if (currentHealth < 0)
+        if (!player.playerIsDead)
         {
-            currentHealth = 0;
-        }
+            if (!player.isParry)
+            {
+                //Direct Hit
+                if (!player.isBlocking)
+                {
+                    playerAnimator.SetTrigger("Hurt");
+                    currentHealth -= damageAmount;
+                    Debug.Log("Player: Took direct hit " + damageAmount + " damage. Current health: " + currentHealth);
+                }
+                //Damage Reduced/ Attack Blocked
+                else
+                {
+                    playerAnimator.SetTrigger("Block");
+                    currentHealth -= 2;
+                    Debug.Log("Player: Blocks the attack! Took " + damageAmount + " reduced damage. Current health: " + currentHealth);
+                }
 
-        Debug.Log("Player took " + damageAmount + " damage. Current health: " + currentHealth);
+                // Make sure health doesn't go below zero
+                if (currentHealth < 0)
+                {
+                    currentHealth = 0;
+                }
 
-        UpdateHealthUI(); // Update the UI to reflect the health change
+                UpdateHealthUI(); // Update the UI to reflect the health change
 
-        // Check if the player's health reaches zero
-        if (currentHealth <= 0)
-        {
-            Die();
+                // Check if the player's health reaches zero
+                if (currentHealth <= 0)
+                {
+                    Die();
+                }
+            }
+            //Parry Attack
+            else
+            {
+                playerAnimator.SetTrigger("Block");
+                Debug.Log("Player parry the attack! No Damage Taken!");
+            }
         }
     }
 
@@ -57,11 +85,11 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player died!");
-
-        // Disable player controls, play a death animation, or trigger a respawn here
-        // Example: Disable player movement
+        player.SetPlayerDead();
+        playerAnimator.SetBool("noBlood", player.NoBlood());
+        playerAnimator.SetTrigger("Death");
         GetComponent<HeroKnight>().enabled = false;
-
+        
         // Optionally, you can trigger a death screen, restart the level, or respawn the player.
     }
 

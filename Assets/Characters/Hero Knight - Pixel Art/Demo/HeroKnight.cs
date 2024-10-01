@@ -6,7 +6,7 @@ public class HeroKnight : MonoBehaviour {
     [SerializeField] float      m_speed = 4.0f;
     [SerializeField] float      m_jumpForce = 7.5f;
     [SerializeField] float      m_rollForce = 6.0f;
-    [SerializeField] bool       m_noBlood = false;
+    [SerializeField] bool       m_noBlood = false;    
     [SerializeField] GameObject m_slideDust;
 
     private Animator            m_animator;
@@ -20,16 +20,25 @@ public class HeroKnight : MonoBehaviour {
     private bool                m_grounded = false;
     private bool                m_rolling = false;
     private int                 m_facingDirection = 1;
-    private int                 m_currentAttack = 0;
-    private float               m_timeSinceAttack = 0.0f;
+    private int                 m_currentAttack = 0;   
     private float               m_delayToIdle = 0.0f;
     private float               m_rollDuration = 8.0f / 14.0f;
     private float               m_rollCurrentTime;
 
     //Attack Variables
+    public Transform            attackPoint;
     public float                attackRange = 2f; // Player's attack range
     public int                  attackDamage = 20;
     public float                attackCooldown = 1f; // Time between attacks
+    private float               lastComboAttackTime = 0.0f; //Time between attacks of combo
+    private float               lastAttackTime; // Time after full combo
+
+    //Blocking
+    public bool isBlocking = false;
+    public bool isParry = false;
+
+    //Dead
+    public bool playerIsDead = false; //Track Player Dead State
 
     // Use this for initialization
     void Start ()
@@ -41,13 +50,16 @@ public class HeroKnight : MonoBehaviour {
         m_wallSensorR2 = transform.Find("WallSensor_R2").GetComponent<Sensor_HeroKnight>();
         m_wallSensorL1 = transform.Find("WallSensor_L1").GetComponent<Sensor_HeroKnight>();
         m_wallSensorL2 = transform.Find("WallSensor_L2").GetComponent<Sensor_HeroKnight>();
+        attackPoint    = transform.Find("AttackPoint").GetComponent<Transform>();
+        lastAttackTime = Time.time - attackCooldown;
     }
 
     // Update is called once per frame
     void Update ()
     {
+        
         // Increase timer that controls attack combo
-        m_timeSinceAttack += Time.deltaTime;
+        lastComboAttackTime += Time.deltaTime;
 
         // Increase timer that checks roll duration
         if(m_rolling)
@@ -111,7 +123,7 @@ public class HeroKnight : MonoBehaviour {
             m_animator.SetTrigger("Hurt");
 
         //Attack
-        else if(Input.GetMouseButtonDown(0) && m_timeSinceAttack > 0.25f && !m_rolling)
+        else if(Input.GetMouseButtonDown(0) && lastComboAttackTime > 0.25f && !m_rolling)
         {
             Attack();
         }
@@ -119,7 +131,9 @@ public class HeroKnight : MonoBehaviour {
         // Block
         else if (Input.GetMouseButtonDown(1) && !m_rolling)
         {
+            StartCoroutine(Parry());
             m_animator.SetTrigger("Block");
+            isBlocking = true;
             m_animator.SetBool("IdleBlock", true);
         }
 
@@ -163,37 +177,57 @@ public class HeroKnight : MonoBehaviour {
         }
     }
 
-    void Attack() {
-
-        if (m_timeSinceAttack > 0.25f && !m_rolling)
+    void Attack()
+    {
+        // Reference to the AttackPoint if not assigned
+        if (attackPoint == null)
         {
-            // Find all nearby enemies within the attack range
-            Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange);
+            attackPoint = transform.Find("AttackPoint").GetComponent<Transform>();
+        }
 
-            foreach (Collider2D enemy in hitEnemies)
+        // Check if enough time has passed since the last combo
+        if (Time.time >= lastAttackTime + attackCooldown)
+        {
+            if (lastComboAttackTime > 0.25f && !m_rolling)
             {
-                if (enemy.CompareTag("Enemy")) // Assuming enemy objects have the "Enemy" tag
+                // Find all nearby enemies within the attack range
+                Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
+
+                foreach (Collider2D enemy in hitEnemies)
                 {
-                    // Apply damage to the enemy
-                    enemy.GetComponent<Bandit>().TakeDamage(attackDamage);
+                    if (enemy.CompareTag("Enemy"))
+                    {
+                        // Apply damage to the enemy
+                        StartCoroutine(enemy.GetComponent<Bandit>().TakeDamage(attackDamage));
+                    }
+                }
+
+                m_currentAttack++;
+
+                // Call one of three attack animations "Attack1", "Attack2", "Attack3"
+                m_animator.SetTrigger("Attack" + m_currentAttack);
+
+                // Reset timer
+                lastComboAttackTime = 0.0f;
+
+                // If the combo is complete (after the third attack), apply the cooldown
+                if (m_currentAttack >= 3)
+                {
+                    // Loop back to one for next combo
+                    m_currentAttack = 0;
+
+                    // Set cooldown after the full combo
+                    lastAttackTime = Time.time;
+                    Debug.Log("Combo completed, entering cooldown.");
                 }
             }
+        }
 
-            m_currentAttack++;
-
-            // Loop back to one after third attack
-            if (m_currentAttack > 3)
-                m_currentAttack = 1;
-
-            // Reset Attack combo if time since last attack is too large
-            if (m_timeSinceAttack > 1.0f)
-                m_currentAttack = 1;
-
-            // Call one of three attack animations "Attack1", "Attack2", "Attack3"
-            m_animator.SetTrigger("Attack" + m_currentAttack);
-
-            // Reset timer
-            m_timeSinceAttack = 0.0f;
+        // Reset combo if too much time has passed between attacks
+        if (lastComboAttackTime > 2.0f)
+        {
+            m_currentAttack = 0;
+            Debug.Log("Combo reset due to delay.");
         }
     }
 
@@ -201,7 +235,13 @@ public class HeroKnight : MonoBehaviour {
     {
         // Draw the attack range when the player is selected in the editor
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+    }
+
+    IEnumerator Parry() {
+        isParry = true;
+        yield return new WaitForSeconds(1f);
+        isParry = false;
     }
 
     // Animation Events
@@ -222,5 +262,14 @@ public class HeroKnight : MonoBehaviour {
             // Turn arrow in correct direction
             dust.transform.localScale = new Vector3(m_facingDirection, 1, 1);
         }
+    }
+
+    public bool NoBlood() { 
+    return m_noBlood;
+    }
+
+    public bool SetPlayerDead() {
+        playerIsDead = true;
+        return playerIsDead;
     }
 }

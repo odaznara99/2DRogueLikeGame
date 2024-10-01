@@ -292,6 +292,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SGMT_Dungeon_Enemy
       objectReference: {fileID: 0}
+    - target: {fileID: 501741502167827891, guid: c05d1a9cc26312444a08114e6356a80f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2054949785823704870, guid: c05d1a9cc26312444a08114e6356a80f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -569,7 +573,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1708357802
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -671,6 +675,10 @@ PrefabInstance:
     - target: {fileID: 6388905171395003092, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
       propertyPath: m_Name
       value: HeroKnight
+      objectReference: {fileID: 0}
+    - target: {fileID: 6839343557542277841, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
+      propertyPath: attackCooldown
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -56,7 +56,8 @@ MonoBehaviour:
   moveSpeed: 1.5
   followRange: 3
   attackRange: 0.9
-  attackCooldown: 5
+  attackCooldown: 2
+  attackTiming: 0.5
   health: 100
   damage: 10
 --- !u!95 &95346456782871180

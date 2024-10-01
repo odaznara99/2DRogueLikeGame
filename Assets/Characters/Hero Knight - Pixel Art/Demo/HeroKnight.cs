@@ -146,7 +146,7 @@ public class HeroKnight : MonoBehaviour {
             m_animator.SetTrigger("Hurt");
 
         //Attack
-        else if (Input.GetMouseButtonDown(0) && lastComboAttackTime > 0.25f && !m_rolling)
+        else if (Input.GetMouseButtonDown(0))
         {
             Attack();
         }
@@ -158,40 +158,27 @@ public class HeroKnight : MonoBehaviour {
         }
 
         // Block
-        else if (Input.GetMouseButtonDown(1) && !m_rolling && !isAttacking && m_grounded)
+        else if (Input.GetMouseButtonDown(1))
         {
-            StopMovement();
-            StartCoroutine(Parry());
-            m_animator.SetTrigger("Block");
-            isBlocking = true;
-            m_animator.SetBool("IdleBlock", true);
+            Block();
         }
         //Release Block
         else if (Input.GetMouseButtonUp(1))
         {
-            m_animator.SetBool("IdleBlock", false);
-            isBlocking = false;
-            AllowMovement();
+            ReleaseBlock();
         }
 
         // Roll
-        else if (Input.GetKeyDown("left shift") && !m_rolling && !m_isWallSliding)
+        else if (Input.GetKeyDown("left shift"))
         {
-            capsuleCollider2D.enabled = false;
-            m_rolling = true;
-            m_animator.SetTrigger("Roll");
-            m_body2d.velocity = new Vector2(m_facingDirection * m_rollForce, m_body2d.velocity.y);
+            Roll();
         }
 
 
         //Jump
-        else if (Input.GetKeyDown("space") && m_grounded && !m_rolling)
+        else if (Input.GetKeyDown("space") )
         {
-            m_animator.SetTrigger("Jump");
-            m_grounded = false;
-            m_animator.SetBool("Grounded", m_grounded);
-            m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_jumpForce);
-            m_groundSensor.Disable(0.2f);
+            Jump();
         }
 
         //Run
@@ -279,6 +266,45 @@ public class HeroKnight : MonoBehaviour {
         // Draw the attack range when the player is selected in the editor
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+    }
+    //Method to Block Attacks
+    void Block() {
+        if (!m_rolling && !isAttacking && m_grounded)
+        {
+            StopMovement();
+            StartCoroutine(Parry());
+            m_animator.SetTrigger("Block");
+            isBlocking = true;
+            m_animator.SetBool("IdleBlock", true);
+        }
+
+    }
+
+    void ReleaseBlock() {
+        m_animator.SetBool("IdleBlock", false);
+        isBlocking = false;
+        AllowMovement();
+    }
+
+    void Roll() {
+        if (!m_rolling && !m_isWallSliding)
+        {
+            capsuleCollider2D.enabled = false;
+            m_rolling = true;
+            m_animator.SetTrigger("Roll");
+            m_body2d.velocity = new Vector2(m_facingDirection * m_rollForce, m_body2d.velocity.y);
+        }
+    }
+
+    void Jump() {
+        if (m_grounded && !m_rolling)
+        {
+            m_animator.SetTrigger("Jump");
+            m_grounded = false;
+            m_animator.SetBool("Grounded", m_grounded);
+            m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_jumpForce);
+            m_groundSensor.Disable(0.2f);
+        }
     }
 
     IEnumerator Parry() {

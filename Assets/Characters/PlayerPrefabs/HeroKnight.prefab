@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1044468314279432416}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 1277463850735621720}
   - component: {fileID: 9136990962116716731}
   - component: {fileID: 479448757856408448}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallSensor_R2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 613166520659295380}
   - component: {fileID: 4443837350318810978}
   - component: {fileID: 790932613010789202}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 1675604322559464210}
   - component: {fileID: 2173838533356644539}
   - component: {fileID: 6522799522704624843}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: HeroKnight
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -277,6 +277,9 @@ MonoBehaviour:
   attackRange: 1.12
   attackDamage: 20
   attackCooldown: 1
+  isBlocking: 0
+  isParry: 0
+  playerIsDead: 0
 --- !u!95 &5726749986802116007
 Animator:
   serializedVersion: 5
@@ -446,7 +449,7 @@ GameObject:
   - component: {fileID: 6113494088232270243}
   - component: {fileID: 6747048827613358585}
   - component: {fileID: 2546682956435161743}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallSensor_R1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -526,7 +529,7 @@ GameObject:
   - component: {fileID: 6150556226128127988}
   - component: {fileID: 3261483243117737812}
   - component: {fileID: 5651643766087512753}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallSensor_L1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -606,7 +609,7 @@ GameObject:
   - component: {fileID: 5895430650628280704}
   - component: {fileID: 4574810107783685557}
   - component: {fileID: 3053602863205494141}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WallSensor_L2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -686,7 +689,7 @@ GameObject:
   - component: {fileID: 8311129812077194470}
   - component: {fileID: 3637369367308332011}
   - component: {fileID: 3770656026919729117}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: GroundSensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}

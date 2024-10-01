@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 212259381048184306}
   - component: {fileID: 50512961935941442}
   - component: {fileID: 61252362154681264}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LightBandit
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -51,7 +51,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_jumpForce: 0
-  player: {fileID: 0}
   attackPoint: {fileID: 8207164269522517271}
   moveSpeed: 1.5
   followRange: 3
@@ -216,7 +215,7 @@ GameObject:
   - component: {fileID: 4269114208525818}
   - component: {fileID: 114926350374723154}
   - component: {fileID: 61368513597639598}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GroundSensor
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -304,7 +303,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8207164269522517271}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: AttackPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

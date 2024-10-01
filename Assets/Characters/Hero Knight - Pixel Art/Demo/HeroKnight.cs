@@ -52,6 +52,9 @@ public class HeroKnight : MonoBehaviour {
         m_wallSensorL2 = transform.Find("WallSensor_L2").GetComponent<Sensor_HeroKnight>();
         attackPoint    = transform.Find("AttackPoint").GetComponent<Transform>();
         lastAttackTime = Time.time - attackCooldown;
+
+        // Ignore Collision Between Enemy and Player
+        Physics2D.IgnoreLayerCollision(3, 6);
     }
 
     // Update is called once per frame

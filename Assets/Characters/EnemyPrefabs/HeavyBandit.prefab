@@ -143,7 +143,7 @@ MonoBehaviour:
   m_jumpForce: 0
   attackPoint: {fileID: 7339971507065404554}
   moveSpeed: 1
-  followRange: 3
+  followRange: 4
   attackRange: 0.9
   attackCooldown: 3
   attackTiming: 0.5

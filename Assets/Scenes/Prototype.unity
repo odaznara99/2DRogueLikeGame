@@ -529,6 +529,7 @@ MonoBehaviour:
   - {fileID: 6343607757486933982, guid: d19a12a536c587b40a7f7d4befab876a, type: 3}
   - {fileID: 3515442187782877742, guid: 2f2a433ee8bce7e4fb1364174b4da128, type: 3}
   - {fileID: 501741502167827891, guid: c05d1a9cc26312444a08114e6356a80f, type: 3}
+  - {fileID: 1116100231651217652, guid: 00689e45a82f363479d53154c5c2604a, type: 3}
   player: {fileID: 3161818909420409470}
   maxSegments: 5
 --- !u!4 &1708357803
@@ -546,6 +547,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1915087989 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6388905171395003092, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
+  m_PrefabInstance: {fileID: 5186002468734567508}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &877152827637657510
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -557,6 +563,10 @@ PrefabInstance:
     - target: {fileID: 1116100231651217652, guid: 00689e45a82f363479d53154c5c2604a, type: 3}
       propertyPath: m_Name
       value: SGMT_Dungeon_2Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 1116100231651217652, guid: 00689e45a82f363479d53154c5c2604a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4549151886727242388, guid: 00689e45a82f363479d53154c5c2604a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -608,6 +618,41 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5248238129706424879, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
   m_PrefabInstance: {fileID: 5186002468734567508}
   m_PrefabAsset: {fileID: 0}
+--- !u!70 &3161818909420409477
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1915087989}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: 9c497a4ce1f356b448c0dd3eca091d35, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0042337775, y: 0.7966102}
+  m_Size: {x: 0.5592271, y: 1.0245491}
+  m_Direction: 0
 --- !u!1001 &5186002468734567508
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -617,24 +662,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2173838533356644539, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
-      propertyPath: m_Size.x
-      value: 0.5605623
+      propertyPath: m_Size.y
+      value: 0.6025184
       objectReference: {fileID: 0}
     - target: {fileID: 2173838533356644539, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
-      propertyPath: m_Offset.x
-      value: -0.009413213
-      objectReference: {fileID: 0}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 9c497a4ce1f356b448c0dd3eca091d35, type: 2}
     - target: {fileID: 2173838533356644539, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
       propertyPath: m_Offset.y
-      value: 0.66200006
+      value: 0.36325923
       objectReference: {fileID: 0}
     - target: {fileID: 5248238129706424879, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.36
       objectReference: {fileID: 0}
     - target: {fileID: 5248238129706424879, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.996
       objectReference: {fileID: 0}
     - target: {fileID: 5248238129706424879, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -672,14 +717,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: HeroKnight
       objectReference: {fileID: 0}
-    - target: {fileID: 6839343557542277841, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
-      propertyPath: attackCooldown
-      value: 2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6388905171395003092, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3161818909420409477}
   m_SourcePrefab: {fileID: 100100000, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

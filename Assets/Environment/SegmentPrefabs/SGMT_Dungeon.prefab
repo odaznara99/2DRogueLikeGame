@@ -124,9 +124,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd8bf73ea8264fe4e88cbdeb58cc3439, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platforms: []
-  spawnPoints: []
-  enemyPrefab: {fileID: 0}
+  platformsPrefabs: []
+  platformSpawnPoints: []
+  platformRate: 0
+  enemyPrefabs:
+  - {fileID: 1463392086428580, guid: d57fd46308768d041b647d0a3d971181, type: 3}
+  - {fileID: 1689866831511430, guid: 704a3fa361e0eee4f8c02eb307f527d1, type: 3}
+  enemySpawnPoints:
+  - {fileID: 7699496922510832297}
+  - {fileID: 749927231618760902}
+  enemyRate: 0.5
 --- !u!1 &4636035145213608166
 GameObject:
   m_ObjectHideFlags: 0

@@ -35,7 +35,7 @@ public class PlayerHealth : MonoBehaviour
                     Debug.Log("Player: Took direct hit " + damageAmount + " damage. Current health: " + currentHealth);
                 }
                 //Damage Reduced/ Attack Blocked
-                else
+                else if (player.isBlocking) 
                 {
                     playerAnimator.SetTrigger("Block");
                     currentHealth -= 2;

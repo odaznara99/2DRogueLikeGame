@@ -6,6 +6,7 @@ public class HeroKnight : MonoBehaviour {
     [SerializeField] float      m_speed = 4.0f;
     [SerializeField] float      m_jumpForce = 7.5f;
     [SerializeField] float      m_rollForce = 6.0f;
+    [SerializeField] bool       m_rolling = false;
     [SerializeField] bool       m_noBlood = false;    
     [SerializeField] GameObject m_slideDust;
 
@@ -17,40 +18,48 @@ public class HeroKnight : MonoBehaviour {
     private Sensor_HeroKnight   m_wallSensorL1;
     private Sensor_HeroKnight   m_wallSensorL2;
     private bool                m_isWallSliding = false;
-    private bool                m_grounded = false;
-    private bool                m_rolling = false;
+    private bool                m_grounded = false;   
     private int                 m_facingDirection = 1;
     private int                 m_currentAttack = 0;   
     private float               m_delayToIdle = 0.0f;
+
+    //Roll Variables
+    private CapsuleCollider2D   capsuleCollider2D;
     private float               m_rollDuration = 8.0f / 14.0f;
     private float               m_rollCurrentTime;
+    private float               inputX;
+    private bool                allowMovement = true;
 
     //Attack Variables
     public Transform            attackPoint;
     public float                attackRange = 2f; // Player's attack range
     public int                  attackDamage = 20;
     public float                attackCooldown = 1f; // Time between attacks
+    public bool                 isAttacking = false; // Track the player attacking state
     private float               lastComboAttackTime = 0.0f; //Time between attacks of combo
     private float               lastAttackTime; // Time after full combo
 
     //Blocking
     public bool isBlocking = false;
     public bool isParry = false;
-
+    
     //Dead
     public bool playerIsDead = false; //Track Player Dead State
 
     // Use this for initialization
     void Start ()
     {
-        m_animator = GetComponent<Animator>();
-        m_body2d = GetComponent<Rigidbody2D>();
+        m_animator          = GetComponent<Animator>();
+        m_body2d            = GetComponent<Rigidbody2D>();
+        capsuleCollider2D   = GetComponent<CapsuleCollider2D>();
+
         m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor_HeroKnight>();
         m_wallSensorR1 = transform.Find("WallSensor_R1").GetComponent<Sensor_HeroKnight>();
         m_wallSensorR2 = transform.Find("WallSensor_R2").GetComponent<Sensor_HeroKnight>();
         m_wallSensorL1 = transform.Find("WallSensor_L1").GetComponent<Sensor_HeroKnight>();
         m_wallSensorL2 = transform.Find("WallSensor_L2").GetComponent<Sensor_HeroKnight>();
         attackPoint    = transform.Find("AttackPoint").GetComponent<Transform>();
+        
         lastAttackTime = Time.time - attackCooldown;
 
         // Ignore Collision Between Enemy and Player
@@ -69,8 +78,13 @@ public class HeroKnight : MonoBehaviour {
             m_rollCurrentTime += Time.deltaTime;
 
         // Disable rolling if timer extends duration
-        if(m_rollCurrentTime > m_rollDuration)
+        if (m_rollCurrentTime > m_rollDuration)
+        {
             m_rolling = false;
+            capsuleCollider2D.enabled = true;
+            //Reset roll timer
+            m_rollCurrentTime = 0f;
+        }
 
         //Check if character just landed on the ground
         if (!m_grounded && m_groundSensor.State())
@@ -87,7 +101,13 @@ public class HeroKnight : MonoBehaviour {
         }
 
         // -- Handle input and movement --
-        float inputX = Input.GetAxis("Horizontal");
+        if (!allowMovement)
+        {
+            inputX = 0;
+        }
+        else {
+            inputX = Input.GetAxis("Horizontal");
+        }
 
         // Swap direction of sprite depending on walk direction
         if (inputX > 0)
@@ -120,37 +140,49 @@ public class HeroKnight : MonoBehaviour {
             m_animator.SetBool("noBlood", m_noBlood);
             m_animator.SetTrigger("Death");
         }
-            
+
         //Hurt
         else if (Input.GetKeyDown("q") && !m_rolling)
             m_animator.SetTrigger("Hurt");
 
         //Attack
-        else if(Input.GetMouseButtonDown(0) && lastComboAttackTime > 0.25f && !m_rolling)
+        else if (Input.GetMouseButtonDown(0) && lastComboAttackTime > 0.25f && !m_rolling)
         {
             Attack();
         }
+        //Release Attack Button
+        else if (Input.GetMouseButtonUp(0)) { 
+        
+            isAttacking = false;
+            AllowMovement();
+        }
 
         // Block
-        else if (Input.GetMouseButtonDown(1) && !m_rolling)
+        else if (Input.GetMouseButtonDown(1) && !m_rolling && !isAttacking && m_grounded)
         {
+            StopMovement();
             StartCoroutine(Parry());
             m_animator.SetTrigger("Block");
             isBlocking = true;
             m_animator.SetBool("IdleBlock", true);
         }
-
+        //Release Block
         else if (Input.GetMouseButtonUp(1))
+        {
             m_animator.SetBool("IdleBlock", false);
+            isBlocking = false;
+            AllowMovement();
+        }
 
         // Roll
         else if (Input.GetKeyDown("left shift") && !m_rolling && !m_isWallSliding)
         {
+            capsuleCollider2D.enabled = false;
             m_rolling = true;
             m_animator.SetTrigger("Roll");
             m_body2d.velocity = new Vector2(m_facingDirection * m_rollForce, m_body2d.velocity.y);
         }
-            
+
 
         //Jump
         else if (Input.GetKeyDown("space") && m_grounded && !m_rolling)
@@ -175,8 +207,8 @@ public class HeroKnight : MonoBehaviour {
         {
             // Prevents flickering transitions to idle
             m_delayToIdle -= Time.deltaTime;
-                if(m_delayToIdle < 0)
-                    m_animator.SetInteger("AnimState", 0);
+            if (m_delayToIdle < 0)
+                m_animator.SetInteger("AnimState", 0);
         }
     }
 
@@ -191,8 +223,15 @@ public class HeroKnight : MonoBehaviour {
         // Check if enough time has passed since the last combo
         if (Time.time >= lastAttackTime + attackCooldown)
         {
+            // Check Combo Cooldown
             if (lastComboAttackTime > 0.25f && !m_rolling)
             {
+                // Enter Attacking State
+                isAttacking = true;
+                // Release Block State
+                isBlocking  = false;
+                StopMovement();
+
                 // Find all nearby enemies within the attack range
                 Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
 
@@ -224,6 +263,7 @@ public class HeroKnight : MonoBehaviour {
                     Debug.Log("Combo completed, entering cooldown.");
                 }
             }
+            
         }
 
         // Reset combo if too much time has passed between attacks
@@ -243,7 +283,7 @@ public class HeroKnight : MonoBehaviour {
 
     IEnumerator Parry() {
         isParry = true;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.3f);
         isParry = false;
     }
 
@@ -274,5 +314,15 @@ public class HeroKnight : MonoBehaviour {
     public bool SetPlayerDead() {
         playerIsDead = true;
         return playerIsDead;
+    }
+
+    void StopMovement()
+    {
+        m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
+        allowMovement = false;
+    }
+
+    public void AllowMovement() {
+        allowMovement = true;
     }
 }

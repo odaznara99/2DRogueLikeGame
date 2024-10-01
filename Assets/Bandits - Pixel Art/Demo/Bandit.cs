@@ -43,6 +43,9 @@ public class Bandit : MonoBehaviour {
         player          = GameObject.Find("HeroKnight").GetComponent<Transform>();
         attackPoint     = transform.Find("AttackPoint").GetComponent<Transform>();
         lastAttackTime  = Time.time - attackCooldown;
+
+        // Ignore Collision Between Enemy
+        Physics2D.IgnoreLayerCollision(6, 6);
     }
 	
 	// Update is called once per frame

@@ -34,9 +34,10 @@ public class HeroKnight : MonoBehaviour {
     public Transform            attackPoint;
     public float                attackRange = 2f; // Player's attack range
     public int                  attackDamage = 20;
-    public float                attackCooldown = 1f; // Time between attacks
+    public float                attackCooldown = 1f; // Cooldown between Full Combo attacks
+    public float                lastComboCooldown = 0.5f; //Time between attacks of combo
     public bool                 isAttacking = false; // Track the player attacking state
-    private float               lastComboAttackTime = 0.0f; //Time between attacks of combo
+    private float               lastComboAttackTime = 0.0f; //Time between attacks of combo   
     private float               lastAttackTime; // Time after full combo
 
     //Blocking
@@ -109,23 +110,15 @@ public class HeroKnight : MonoBehaviour {
             inputX = Input.GetAxis("Horizontal");
         }
 
-        // Swap direction of sprite depending on walk direction
-        if (inputX > 0)
+        // Move by Input X
+        if (!m_rolling)
         {
-            GetComponent<SpriteRenderer>().flipX = false;
-            m_facingDirection = 1;
-        }
-            
-        else if (inputX < 0)
-        {
-            GetComponent<SpriteRenderer>().flipX = true;
-            m_facingDirection = -1;
-        }
-
-        // Move
-        if (!m_rolling )
             m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
+        }
 
+        FlipPlayerSprite();
+
+        
         //Set AirSpeed in animator
         m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
 
@@ -134,19 +127,10 @@ public class HeroKnight : MonoBehaviour {
         m_isWallSliding = (m_wallSensorR1.State() && m_wallSensorR2.State()) || (m_wallSensorL1.State() && m_wallSensorL2.State());
         m_animator.SetBool("WallSlide", m_isWallSliding);
 
-        //Death
-        if (Input.GetKeyDown("e") && !m_rolling)
-        {
-            m_animator.SetBool("noBlood", m_noBlood);
-            m_animator.SetTrigger("Death");
-        }
-
-        //Hurt
-        else if (Input.GetKeyDown("q") && !m_rolling)
-            m_animator.SetTrigger("Hurt");
-
+        // -- Handle Input --
+ 
         //Attack
-        else if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             Attack();
         }
@@ -181,7 +165,7 @@ public class HeroKnight : MonoBehaviour {
             Jump();
         }
 
-        //Run
+        //Run Animation
         else if (Mathf.Abs(inputX) > Mathf.Epsilon)
         {
             // Reset timer
@@ -189,7 +173,7 @@ public class HeroKnight : MonoBehaviour {
             m_animator.SetInteger("AnimState", 1);
         }
 
-        //Idle
+        //Idle Animation
         else
         {
             // Prevents flickering transitions to idle
@@ -211,7 +195,7 @@ public class HeroKnight : MonoBehaviour {
         if (Time.time >= lastAttackTime + attackCooldown)
         {
             // Check Combo Cooldown
-            if (lastComboAttackTime > 0.25f && !m_rolling)
+            if (lastComboAttackTime > lastComboCooldown && !m_rolling)
             {
                 // Enter Attacking State
                 isAttacking = true;
@@ -235,6 +219,7 @@ public class HeroKnight : MonoBehaviour {
 
                 // Call one of three attack animations "Attack1", "Attack2", "Attack3"
                 m_animator.SetTrigger("Attack" + m_currentAttack);
+                Debug.Log("Attack" + m_currentAttack);
 
                 // Reset timer
                 lastComboAttackTime = 0.0f;
@@ -254,7 +239,7 @@ public class HeroKnight : MonoBehaviour {
         }
 
         // Reset combo if too much time has passed between attacks
-        if (lastComboAttackTime > 2.0f)
+        if (lastComboAttackTime > 1.0f)
         {
             m_currentAttack = 0;
             Debug.Log("Combo reset due to delay.");
@@ -333,11 +318,27 @@ public class HeroKnight : MonoBehaviour {
         }
     }
 
+    void FlipPlayerSprite()
+    { // Swap direction of sprite depending on walk direction
+        if (inputX > 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = false;
+            m_facingDirection = 1;
+        }
+
+        else if (inputX < 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = true;
+            m_facingDirection = -1;
+        }
+    }
+
     public bool NoBlood() { 
     return m_noBlood;
     }
 
     public bool SetPlayerDead() {
+        StopMovement();
         playerIsDead = true;
         return playerIsDead;
     }

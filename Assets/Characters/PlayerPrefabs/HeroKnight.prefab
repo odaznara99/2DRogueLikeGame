@@ -271,12 +271,14 @@ MonoBehaviour:
   m_speed: 4
   m_jumpForce: 7.5
   m_rollForce: 6
+  m_rolling: 0
   m_noBlood: 0
   m_slideDust: {fileID: 1038168246061390451, guid: 8b8c8cc6774fb074cb9139cc631b108e, type: 3}
   attackPoint: {fileID: 1044468314279432416}
   attackRange: 1.12
   attackDamage: 20
   attackCooldown: 2
+  lastComboCooldown: 0.5
   isAttacking: 0
   isBlocking: 0
   isParry: 0

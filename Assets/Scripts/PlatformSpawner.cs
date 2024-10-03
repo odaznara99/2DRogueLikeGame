@@ -17,7 +17,7 @@ public class PlatformSpawner : MonoBehaviour
 
     void Start()
     {
-        //SpawnPlatforms();
+        SpawnPlatforms();
         SpawnEnemies();
     }
 

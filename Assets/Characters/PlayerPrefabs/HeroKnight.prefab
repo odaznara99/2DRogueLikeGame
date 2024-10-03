@@ -155,7 +155,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
+  m_BackGroundColor: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -178,8 +178,8 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
-  orthographic: 1
+  field of view: 36
+  orthographic: 0
   orthographic size: 3.5
   m_Depth: -1
   m_CullingMask:
@@ -227,6 +227,7 @@ GameObject:
   - component: {fileID: 1675604322559464210}
   - component: {fileID: 2173838533356644539}
   - component: {fileID: 6522799522704624843}
+  - component: {fileID: 2826013515120861116}
   m_Layer: 3
   m_Name: HeroKnight
   m_TagString: Player
@@ -277,8 +278,8 @@ MonoBehaviour:
   attackPoint: {fileID: 1044468314279432416}
   attackRange: 1.12
   attackDamage: 20
-  attackCooldown: 2
-  lastComboCooldown: 0.5
+  attackCooldown: 1
+  attackInBetweenTime: 0.5
   isAttacking: 0
   isBlocking: 0
   isParry: 0
@@ -392,7 +393,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 6388905171395003092}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 9c497a4ce1f356b448c0dd3eca091d35, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -415,7 +416,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.009413213, y: 0.66200006}
+  m_Offset: {x: -0.0008201599, y: 0.9875972}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
@@ -426,7 +427,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5605623, y: 1.2}
+  m_Size: {x: 0.49755096, y: 0.63688517}
   m_EdgeRadius: 0
 --- !u!114 &6522799522704624843
 MonoBehaviour:
@@ -441,6 +442,41 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
+--- !u!70 &2826013515120861116
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6388905171395003092}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 6200000, guid: 9c497a4ce1f356b448c0dd3eca091d35, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.0042337775, y: 0.35842824}
+  m_Size: {x: 0.5592271, y: 0.6064143}
+  m_Direction: 0
 --- !u!1 &6404545247353387196
 GameObject:
   m_ObjectHideFlags: 0

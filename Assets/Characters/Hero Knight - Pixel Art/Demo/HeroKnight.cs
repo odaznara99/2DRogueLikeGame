@@ -24,7 +24,7 @@ public class HeroKnight : MonoBehaviour {
     private float               m_delayToIdle = 0.0f;
 
     //Roll Variables
-    private CapsuleCollider2D   capsuleCollider2D;
+    private BoxCollider2D       upperBodyCollider;
     private float               m_rollDuration = 8.0f / 14.0f;
     private float               m_rollCurrentTime;
     private float               inputX;
@@ -35,7 +35,7 @@ public class HeroKnight : MonoBehaviour {
     public float                attackRange = 2f; // Player's attack range
     public int                  attackDamage = 20;
     public float                attackCooldown = 1f; // Cooldown between Full Combo attacks
-    public float                lastComboCooldown = 0.5f; //Time between attacks of combo
+    public float                attackInBetweenTime = 0.5f; //Time between attacks of combo
     public bool                 isAttacking = false; // Track the player attacking state
     private float               lastComboAttackTime = 0.0f; //Time between attacks of combo   
     private float               lastAttackTime; // Time after full combo
@@ -52,7 +52,7 @@ public class HeroKnight : MonoBehaviour {
     {
         m_animator          = GetComponent<Animator>();
         m_body2d            = GetComponent<Rigidbody2D>();
-        capsuleCollider2D   = GetComponent<CapsuleCollider2D>();
+        upperBodyCollider   = GetComponent<BoxCollider2D>();
 
         m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor_HeroKnight>();
         m_wallSensorR1 = transform.Find("WallSensor_R1").GetComponent<Sensor_HeroKnight>();
@@ -82,7 +82,7 @@ public class HeroKnight : MonoBehaviour {
         if (m_rollCurrentTime > m_rollDuration)
         {
             m_rolling = false;
-            capsuleCollider2D.enabled = true;
+            upperBodyCollider.enabled = true;
             //Reset roll timer
             m_rollCurrentTime = 0f;
         }
@@ -106,7 +106,8 @@ public class HeroKnight : MonoBehaviour {
         {
             inputX = 0;
         }
-        else {
+        else if (allowMovement)
+        {
             inputX = Input.GetAxis("Horizontal");
         }
 
@@ -130,7 +131,7 @@ public class HeroKnight : MonoBehaviour {
         // -- Handle Input --
  
         //Attack
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && m_grounded)
         {
             Attack();
         }
@@ -191,16 +192,17 @@ public class HeroKnight : MonoBehaviour {
             attackPoint = transform.Find("AttackPoint").GetComponent<Transform>();
         }
 
-        // Check if enough time has passed since the last combo
-        if (Time.time >= lastAttackTime + attackCooldown)
+        // Check Cooldown
+        if (!isAttacking && Time.time >= lastAttackTime + attackCooldown)
         {
-            // Check Combo Cooldown
-            if (lastComboAttackTime > lastComboCooldown && !m_rolling)
+            // Check In Between Time
+            if (lastComboAttackTime > attackInBetweenTime && !m_rolling)
             {
                 // Enter Attacking State
                 isAttacking = true;
                 // Release Block State
                 isBlocking  = false;
+                //Stop Horizontal Movement
                 StopMovement();
 
                 // Find all nearby enemies within the attack range
@@ -215,6 +217,7 @@ public class HeroKnight : MonoBehaviour {
                     }
                 }
 
+                //Variable for Current Attack Animation
                 m_currentAttack++;
 
                 // Call one of three attack animations "Attack1", "Attack2", "Attack3"
@@ -232,18 +235,24 @@ public class HeroKnight : MonoBehaviour {
 
                     // Set cooldown after the full combo
                     lastAttackTime = Time.time;
+
+                    //Allow Movement Horizontally
+                    //AllowMovement();
                     Debug.Log("Combo completed, entering cooldown.");
                 }
             }
             
         }
 
-        // Reset combo if too much time has passed between attacks
-        if (lastComboAttackTime > 1.0f)
+        // Reset combo animation if too much time has passed between attacks
+        if (lastComboAttackTime > attackInBetweenTime + 2f)
         {
             m_currentAttack = 0;
-            Debug.Log("Combo reset due to delay.");
+            //AllowMovement();
+            Debug.Log("Combo is reset due to delay.");
         }
+
+
     }
 
     private void OnDrawGizmosSelected()
@@ -274,7 +283,7 @@ public class HeroKnight : MonoBehaviour {
     void Roll() {
         if (!m_rolling && !m_isWallSliding)
         {
-            capsuleCollider2D.enabled = false;
+            upperBodyCollider.enabled = false;
             m_rolling = true;
             m_animator.SetTrigger("Roll");
             m_body2d.velocity = new Vector2(m_facingDirection * m_rollForce, m_body2d.velocity.y);

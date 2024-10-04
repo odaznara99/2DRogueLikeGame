@@ -53,11 +53,19 @@ public class SegmentManager : MonoBehaviour
     void SpawnSegment()
     {
         //Spaw Random Segment
-        int randomIndex = Random.Range(1, segmentPrefabs.Length-1);
+        int randomIndex = Random.Range(1, segmentPrefabs.Length);
         
         // To avoid same index
         if (randomIndex == previousSegmentindex) {
-            randomIndex++;
+
+            if (previousSegmentindex == segmentPrefabs.Length)
+            {
+                randomIndex = previousSegmentindex - 1;
+            }
+            else
+            {
+                randomIndex++;
+            }
         }
 
         GameObject newSegment = Instantiate(segmentPrefabs[randomIndex], nextSpawnPoint, Quaternion.identity);

@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.79983985, g: 0.80308914, b: 0.8113208, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: d48a7646f5d0547e889733d84b50cb9f, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 12ccb828343c3405fb94289774b51aad, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -496,67 +496,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1431766163
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2610804294432967358, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8611169255893809227, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_Name
-      value: SGMT_Village_3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8611169255893809227, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
 --- !u!1 &1708357801
 GameObject:
   m_ObjectHideFlags: 0
@@ -591,6 +530,8 @@ MonoBehaviour:
   - {fileID: 4743650585900254744, guid: 5d0219a0831c1a34e8fcc40fd6199a2d, type: 3}
   - {fileID: 5506974605406375848, guid: b6603f0149f922b4487285c3e7a75d27, type: 3}
   - {fileID: 8611169255893809227, guid: 01a4dcc530b11a643a719b85960995f1, type: 3}
+  - {fileID: 4743650585900254744, guid: 64b91b7c09d097a4eb0328228e5b6719, type: 3}
+  - {fileID: 4743650585900254744, guid: f02e3ac122dc02c47b52bed2693323b9, type: 3}
   player: {fileID: 3161818909420409470}
   maxSegments: 5
 --- !u!4 &1708357803
@@ -665,10 +606,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: HeroKnight
       objectReference: {fileID: 0}
-    - target: {fileID: 6839343557542277841, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
-      propertyPath: attackInBetweenTime
-      value: 0.25
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -683,4 +620,3 @@ SceneRoots:
   - {fileID: 1222000199}
   - {fileID: 1708357803}
   - {fileID: 1162348661}
-  - {fileID: 1431766163}

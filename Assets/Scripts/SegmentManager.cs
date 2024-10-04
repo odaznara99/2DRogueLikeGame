@@ -11,6 +11,7 @@ public class SegmentManager : MonoBehaviour
 
     private List<GameObject> activeSegments = new List<GameObject>();
     private Vector3 nextSpawnPoint;
+    private int previousSegmentindex;
 
     void Start()
     {
@@ -52,7 +53,13 @@ public class SegmentManager : MonoBehaviour
     void SpawnSegment()
     {
         //Spaw Random Segment
-        int randomIndex = Random.Range(1, segmentPrefabs.Length);      
+        int randomIndex = Random.Range(1, segmentPrefabs.Length-1);
+        
+        // To avoid same index
+        if (randomIndex == previousSegmentindex) {
+            randomIndex++;
+        }
+
         GameObject newSegment = Instantiate(segmentPrefabs[randomIndex], nextSpawnPoint, Quaternion.identity);
 
         // Get the start point
@@ -67,6 +74,9 @@ public class SegmentManager : MonoBehaviour
 
         // Update next spawn point based on the end point of the new segment
         nextSpawnPoint = newSegment.GetComponent<Segment>().endPoint.position;
+
+        // Update the previousSegmentIndex
+        previousSegmentindex = randomIndex;
     }
 
     void SpawnStartingSegment()

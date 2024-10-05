@@ -63,8 +63,9 @@ public class HeroKnight : MonoBehaviour {
         
         lastAttackTime = Time.time - attackCooldown;
 
-        // Ignore Collision Between Enemy and Player
+        // Ignore Collision Between Player (Layer 3) and Enemy (Layer 6)
         Physics2D.IgnoreLayerCollision(3, 6);
+        Physics2D.IgnoreLayerCollision(3, 3);
     }
 
     // Update is called once per frame

@@ -33,9 +33,10 @@ public class SegmentManager : MonoBehaviour
         SpawnStartingSegment();
 
         // Spawn initial segments
-        for (int i = 0; i < maxSegments; i++)
+        for (int segmentIndex = 1; segmentIndex < maxSegments; segmentIndex++)
         {
-            SpawnSegment();
+            //SpawnRandomSegment();
+            SpawnSpecificSegment(segmentIndex);
         }
 
         
@@ -45,12 +46,12 @@ public class SegmentManager : MonoBehaviour
     {
         if (PlayerReachedNextSegment())
         {
-            SpawnSegment();
+            SpawnRandomSegment();
             RemoveOldSegment();
         }
     }
 
-    void SpawnSegment()
+    void SpawnRandomSegment()
     {
         //Spaw Random Segment
         int randomIndex = Random.Range(1, segmentPrefabs.Length);
@@ -105,6 +106,28 @@ public class SegmentManager : MonoBehaviour
 
         // Update next spawn point based on the end point of the new segment
         nextSpawnPoint = newSegment.GetComponent<Segment>().endPoint.position;
+    }
+
+    void SpawnSpecificSegment(int segmentIndex)
+    {
+
+        GameObject newSegment = Instantiate(segmentPrefabs[segmentIndex], nextSpawnPoint, Quaternion.identity);
+
+        // Get the start point
+        Transform newSegmentStartPoint = newSegment.GetComponent<Segment>().startPoint;
+
+        // Offset the position
+        Vector3 offset = nextSpawnPoint - newSegmentStartPoint.position;
+        newSegment.transform.position += offset;
+
+        // Add the new segment to the list of active segments
+        activeSegments.Add(newSegment);
+
+        // Update next spawn point based on the end point of the new segment
+        nextSpawnPoint = newSegment.GetComponent<Segment>().endPoint.position;
+
+        // Update the previousSegmentIndex
+        previousSegmentindex = segmentIndex;
     }
 
     void RemoveOldSegment()

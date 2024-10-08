@@ -1,14 +1,21 @@
+using Microsoft.Unity.VisualStudio.Editor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AdaptivePerformance.VisualScripting;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class PlayerHealth : MonoBehaviour
 {
     private HeroKnight      player; //Reference to player script
     private Animator        playerAnimator; //Reference to player animator
     public  int             maxHealth = 100; // The maximum health the player can have
-    private int             currentHealth;  // The player's current health
+    public  int             currentHealth;  // The player's current health
+
+    [Header("Health UI")]
+    public UnityEngine.UI.Image healthBar;
+    public Text healthText; 
 
     // Start is called before the first frame update
     void Start()
@@ -99,7 +106,10 @@ public class PlayerHealth : MonoBehaviour
     {
         // Implement this method to update the player's health bar or any other UI element that displays health
         // For example, if using Unity UI:
-        // healthBar.fillAmount = (float)currentHealth / maxHealth;
+        healthBar.fillAmount = (float)currentHealth / maxHealth;
+        Debug.Log("Fill Amount: "+(float)currentHealth / maxHealth);
+
+        healthText.text = currentHealth + "/" + maxHealth;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

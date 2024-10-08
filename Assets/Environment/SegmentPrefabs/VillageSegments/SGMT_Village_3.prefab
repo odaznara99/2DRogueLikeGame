@@ -1679,7 +1679,6 @@ MonoBehaviour:
   enemySpawnPoints:
   - {fileID: 8360957497714237359}
   - {fileID: 4583622230333651969}
-  - {fileID: 0}
   enemyRate: 0.7
 --- !u!1 &9046907008672420158
 GameObject:

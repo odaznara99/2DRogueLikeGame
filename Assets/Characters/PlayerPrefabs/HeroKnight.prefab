@@ -222,11 +222,11 @@ GameObject:
   m_Component:
   - component: {fileID: 5248238129706424879}
   - component: {fileID: 6839343557542277841}
+  - component: {fileID: 6522799522704624843}
   - component: {fileID: 5726749986802116007}
   - component: {fileID: 8602156681989465258}
   - component: {fileID: 1675604322559464210}
   - component: {fileID: 2173838533356644539}
-  - component: {fileID: 6522799522704624843}
   - component: {fileID: 2826013515120861116}
   m_Layer: 3
   m_Name: HeroKnight
@@ -284,6 +284,19 @@ MonoBehaviour:
   isBlocking: 0
   isParry: 0
   playerIsDead: 0
+--- !u!114 &6522799522704624843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6388905171395003092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8137c407a85a64458e98d6ff4ab2fa2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
 --- !u!95 &5726749986802116007
 Animator:
   serializedVersion: 5
@@ -429,19 +442,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.49755096, y: 1.1443784}
   m_EdgeRadius: 0
---- !u!114 &6522799522704624843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6388905171395003092}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8137c407a85a64458e98d6ff4ab2fa2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 100
 --- !u!70 &2826013515120861116
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

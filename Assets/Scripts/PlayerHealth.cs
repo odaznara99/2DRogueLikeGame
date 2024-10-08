@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AdaptivePerformance.VisualScripting;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -99,5 +100,14 @@ public class PlayerHealth : MonoBehaviour
         // Implement this method to update the player's health bar or any other UI element that displays health
         // For example, if using Unity UI:
         // healthBar.fillAmount = (float)currentHealth / maxHealth;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Hazard")) {
+
+            TakeDamage(20);
+        
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Build;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class SegmentManager : MonoBehaviour
 {
     public GameObject[] segmentPrefabs;
     public Transform player;
-    public int maxSegments = 5;
+    private int maxSegments = 0;
 
     private List<GameObject> activeSegments = new List<GameObject>();
     private Vector3 nextSpawnPoint;
@@ -23,7 +24,7 @@ public class SegmentManager : MonoBehaviour
 
         //To avoid zero or null
         if (maxSegments == 0) {
-            maxSegments = 5;
+            maxSegments = segmentPrefabs.Length;
         }
 
         //Starting SpawnPoint
@@ -33,20 +34,17 @@ public class SegmentManager : MonoBehaviour
         SpawnStartingSegment();
 
         // Spawn initial segments
-        for (int segmentIndex = 1; segmentIndex < maxSegments; segmentIndex++)
-        {
-            //SpawnRandomSegment();
-            SpawnSpecificSegment(segmentIndex);
-        }
+        SpawnSegmentsSetRandomly();
 
-        
+
     }
 
     void Update()
     {
         if (PlayerReachedNextSegment())
         {
-            SpawnRandomSegment();
+            //SpawnRandomSegment();
+            SpawnSegmentsSetRandomly();
             RemoveOldSegment();
         }
     }
@@ -128,6 +126,24 @@ public class SegmentManager : MonoBehaviour
 
         // Update the previousSegmentIndex
         previousSegmentindex = segmentIndex;
+    }
+
+    void SpawnSegmentsSetRandomly()
+    {
+        // Create an array of indices from 1 to segmentPrefabs.Length
+        int[] segmentIndices = Enumerable.Range(1, segmentPrefabs.Length).ToArray();
+
+        // Shuffle the array to randomize the segment order
+        segmentIndices = segmentIndices.OrderBy(x => Random.value).ToArray();
+
+        // Loop through the shuffled indices and spawn the corresponding segments
+        for (int i = 0; i < maxSegments; i++)
+        {
+            int segmentIndex = segmentIndices[i]; // Get the shuffled segment index
+
+            // Spawn the specific segment based on the random order
+            SpawnSpecificSegment(segmentIndex);
+        }
     }
 
     void RemoveOldSegment()

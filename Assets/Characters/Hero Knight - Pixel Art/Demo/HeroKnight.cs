@@ -3,64 +3,64 @@ using System.Collections;
 
 public class HeroKnight : MonoBehaviour {
 
-    [SerializeField] float      m_speed = 4.0f;
-    [SerializeField] float      m_jumpForce = 7.5f;
-    [SerializeField] float      m_rollForce = 6.0f;
-    [SerializeField] bool       m_rolling = false;
-    [SerializeField] bool       m_noBlood = false;    
+    [SerializeField] float m_speed = 4.0f;
+    [SerializeField] float m_jumpForce = 7.5f;
+    [SerializeField] float m_rollForce = 6.0f;
+    [SerializeField] bool m_rolling = false;
+    [SerializeField] bool m_noBlood = false;
     [SerializeField] GameObject m_slideDust;
 
-    private Animator            m_animator;
-    private Rigidbody2D         m_body2d;
-    private Sensor_HeroKnight   m_groundSensor;
-    private Sensor_HeroKnight   m_wallSensorR1;
-    private Sensor_HeroKnight   m_wallSensorR2;
-    private Sensor_HeroKnight   m_wallSensorL1;
-    private Sensor_HeroKnight   m_wallSensorL2;
-    private bool                m_isWallSliding = false;
-    private bool                m_grounded = false;   
-    private int                 m_facingDirection = 1;
-    private int                 m_currentAttack = 0;   
-    private float               m_delayToIdle = 0.0f;
+    private Animator m_animator;
+    private Rigidbody2D m_body2d;
+    private Sensor_HeroKnight m_groundSensor;
+    private Sensor_HeroKnight m_wallSensorR1;
+    private Sensor_HeroKnight m_wallSensorR2;
+    private Sensor_HeroKnight m_wallSensorL1;
+    private Sensor_HeroKnight m_wallSensorL2;
+    [SerializeField] private bool m_isWallSliding = false;
+    private bool m_grounded = false;
+    private int m_facingDirection = 1;
+    private int m_currentAttack = 0;
+    private float m_delayToIdle = 0.0f;
 
     //Roll Variables
-    private BoxCollider2D       upperBodyCollider;
-    private float               m_rollDuration = 8.0f / 14.0f;
-    private float               m_rollCurrentTime;
-    private float               inputX;
-    private bool                allowMovement = true;
+    private BoxCollider2D upperBodyCollider;
+    private float m_rollDuration = 8.0f / 14.0f;
+    private float m_rollCurrentTime;
+    private float inputX;
+    [SerializeField] private bool allowMovement = true;
 
     //Attack Variables
-    public Transform            attackPoint;
-    public float                attackRange = 2f; // Player's attack range
-    public int                  attackDamage = 20;
-    public float                attackCooldown = 1f; // Cooldown between Full Combo attacks
-    public float                attackInBetweenTime = 0.5f; //Time between attacks of combo
-    public bool                 isAttacking = false; // Track the player attacking state
-    private float               lastComboAttackTime = 0.0f; //Time between attacks of combo   
-    private float               lastAttackTime; // Time after full combo
+    public Transform attackPoint;
+    public float attackRange = 2f; // Player's attack range
+    public int attackDamage = 20;
+    public float attackCooldown = 1f; // Cooldown between Full Combo attacks
+    public float attackInBetweenTime = 0.5f; //Time between attacks of combo
+    public bool isAttacking = false; // Track the player attacking state
+    private float lastComboAttackTime = 0.0f; //Time between attacks of combo   
+    private float lastAttackTime; // Time after full combo
 
     //Blocking
     public bool isBlocking = false;
     public bool isParry = false;
-    
+
     //Dead
     public bool playerIsDead = false; //Track Player Dead State
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
-        m_animator          = GetComponent<Animator>();
-        m_body2d            = GetComponent<Rigidbody2D>();
-        upperBodyCollider   = GetComponent<BoxCollider2D>();
+        m_animator = GetComponent<Animator>();
+        m_body2d = GetComponent<Rigidbody2D>();
+        upperBodyCollider = GetComponent<BoxCollider2D>();
 
         m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor_HeroKnight>();
         m_wallSensorR1 = transform.Find("WallSensor_R1").GetComponent<Sensor_HeroKnight>();
         m_wallSensorR2 = transform.Find("WallSensor_R2").GetComponent<Sensor_HeroKnight>();
         m_wallSensorL1 = transform.Find("WallSensor_L1").GetComponent<Sensor_HeroKnight>();
         m_wallSensorL2 = transform.Find("WallSensor_L2").GetComponent<Sensor_HeroKnight>();
-        attackPoint    = transform.Find("AttackPoint").GetComponent<Transform>();
-        
+        attackPoint = transform.Find("AttackPoint").GetComponent<Transform>();
+
         lastAttackTime = Time.time - attackCooldown;
 
         // Ignore Collision Between Player (Layer 3) and Enemy (Layer 6)
@@ -69,14 +69,14 @@ public class HeroKnight : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update ()
+    void Update()
     {
-        
+
         // Increase timer that controls attack combo
         lastComboAttackTime += Time.deltaTime;
 
         // Increase timer that checks roll duration
-        if(m_rolling)
+        if (m_rolling)
             m_rollCurrentTime += Time.deltaTime;
 
         // Disable rolling if timer extends duration
@@ -106,6 +106,8 @@ public class HeroKnight : MonoBehaviour {
         if (!allowMovement)
         {
             inputX = 0;
+            //Retain current Horizontal Velocity
+            //inputX = m_body2d.velocity.x;
         }
         else if (allowMovement)
         {
@@ -120,25 +122,23 @@ public class HeroKnight : MonoBehaviour {
 
         FlipPlayerSprite();
 
-        
+
         //Set AirSpeed in animator
         m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
 
-        // -- Handle Animations --
-        //Wall Slide
-        m_isWallSliding = (m_wallSensorR1.State() && m_wallSensorR2.State()) || (m_wallSensorL1.State() && m_wallSensorL2.State());
-        m_animator.SetBool("WallSlide", m_isWallSliding);
+        WallSliding();
+
 
         // -- Handle Input --
- 
+
         //Attack
         if (Input.GetMouseButtonDown(0) && m_grounded)
         {
             Attack();
         }
         //Release Attack Button
-        else if (Input.GetMouseButtonUp(0)) { 
-        
+        else if (Input.GetMouseButtonUp(0)) {
+
             isAttacking = false;
             AllowMovement();
         }
@@ -162,7 +162,7 @@ public class HeroKnight : MonoBehaviour {
 
 
         //Jump
-        else if (Input.GetKeyDown("space") )
+        else if (Input.GetKeyDown("space"))
         {
             Jump();
         }
@@ -202,7 +202,7 @@ public class HeroKnight : MonoBehaviour {
                 // Enter Attacking State
                 isAttacking = true;
                 // Release Block State
-                isBlocking  = false;
+                isBlocking = false;
                 //Stop Horizontal Movement
                 StopMovement();
 
@@ -242,7 +242,7 @@ public class HeroKnight : MonoBehaviour {
                     Debug.Log("Combo completed, entering cooldown.");
                 }
             }
-            
+
         }
 
         // Reset combo animation if too much time has passed between attacks
@@ -292,13 +292,21 @@ public class HeroKnight : MonoBehaviour {
     }
 
     void Jump() {
-        if (m_grounded && !m_rolling)
+        //Check if on ground or wallsliding
+        if ((m_grounded||m_isWallSliding) && !m_rolling)
         {
             m_animator.SetTrigger("Jump");
             m_grounded = false;
             m_animator.SetBool("Grounded", m_grounded);
+            //Add Horizontal Force to Opposite Direction
+            if (m_isWallSliding) {
+                //AllowMovement();
+                m_body2d.velocity = new Vector2((-20 * m_facingDirection), m_body2d.velocity.y);
+            }
+            //Add Velocity to Jump
             m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_jumpForce);
             m_groundSensor.Disable(0.2f);
+            
         }
     }
 
@@ -343,6 +351,27 @@ public class HeroKnight : MonoBehaviour {
         }
     }
 
+    void WallSliding() {
+        //Wall Slide
+
+        //Check Wall Sensor and Ground
+        m_isWallSliding = (m_wallSensorR1.State() && m_wallSensorR2.State()) || (m_wallSensorL1.State() && m_wallSensorL2.State() && !m_grounded);
+        m_animator.SetBool("WallSlide", m_isWallSliding);
+
+
+        //Disable Horizontal movement when wall sliding
+        if (m_isWallSliding)
+        {
+            StopMovement();
+        }
+        else if (!m_isWallSliding)
+        {
+            AllowMovement();
+        }
+
+
+    }
+
     public bool NoBlood() { 
     return m_noBlood;
     }
@@ -356,6 +385,7 @@ public class HeroKnight : MonoBehaviour {
     void StopMovement()
     {
         m_body2d.velocity = new Vector2(0, m_body2d.velocity.y);
+        //m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_body2d.velocity.y);
         allowMovement = false;
     }
 

@@ -3,11 +3,11 @@ using System.Collections;
 
 public class HeroKnight : MonoBehaviour {
 
-    [SerializeField] float m_speed = 4.0f;
-    [SerializeField] float m_jumpForce = 7.5f;
-    [SerializeField] float m_rollForce = 6.0f;
-    [SerializeField] bool m_rolling = false;
-    [SerializeField] bool m_noBlood = false;
+    [SerializeField] float  m_speed = 4.0f;
+    [SerializeField] float  m_jumpForce = 7.5f;
+    [SerializeField] float  m_wallJumpForce = 4.0f;
+    [SerializeField] float  m_rollForce = 6.0f;   
+    [SerializeField] bool   m_noBlood = false;
     [SerializeField] GameObject m_slideDust;
 
     private Animator m_animator;
@@ -17,8 +17,8 @@ public class HeroKnight : MonoBehaviour {
     private Sensor_HeroKnight m_wallSensorR2;
     private Sensor_HeroKnight m_wallSensorL1;
     private Sensor_HeroKnight m_wallSensorL2;
-    [SerializeField] private bool m_isWallSliding = false;
-    private bool m_grounded = false;
+
+
     private int m_facingDirection = 1;
     private int m_currentAttack = 0;
     private float m_delayToIdle = 0.0f;
@@ -28,7 +28,7 @@ public class HeroKnight : MonoBehaviour {
     private float m_rollDuration = 8.0f / 14.0f;
     private float m_rollCurrentTime;
     private float inputX;
-    [SerializeField] private bool allowMovement = true;
+    
 
     //Attack Variables
     public Transform attackPoint;
@@ -36,17 +36,26 @@ public class HeroKnight : MonoBehaviour {
     public int attackDamage = 20;
     public float attackCooldown = 1f; // Cooldown between Full Combo attacks
     public float attackInBetweenTime = 0.5f; //Time between attacks of combo
-    public bool isAttacking = false; // Track the player attacking state
+    
     private float lastComboAttackTime = 0.0f; //Time between attacks of combo   
     private float lastAttackTime; // Time after full combo
 
-    //Blocking
-    public bool isBlocking = false;
-    public bool isParry = false;
+    //WallJump Variables
+    private float m_wallJumpCurrentTime;
+    private float m_wallJumpDuration = 0.8f;
 
-    //Dead
-    public bool playerIsDead = false; //Track Player Dead State
-
+    //Player States
+    [Header("Player States")]
+    public bool playerIsDead    = false; //Track Player Dead State
+    public bool isBlocking      = false;
+    public bool isParry         = false;
+    public bool isAttacking     = false; // Track the player attacking state
+    public bool isWallJumping   = false; // Trach the player is wallJumping
+    [SerializeField] private bool m_isWallSliding   = false;
+    [SerializeField] private bool m_grounded        = false;
+    [SerializeField] private bool m_rolling         = false;   
+    [SerializeField] private bool allowMovement     = true;
+    
     // Use this for initialization
     void Start()
     {
@@ -114,8 +123,8 @@ public class HeroKnight : MonoBehaviour {
             inputX = Input.GetAxis("Horizontal");
         }
 
-        // Move by Input X
-        if (!m_rolling)
+        // Move RigidBody by Input X
+        if (!m_rolling && !isWallJumping)
         {
             m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
         }
@@ -127,7 +136,6 @@ public class HeroKnight : MonoBehaviour {
         m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
 
         WallSliding();
-
 
         // -- Handle Input --
 
@@ -298,12 +306,17 @@ public class HeroKnight : MonoBehaviour {
             m_animator.SetTrigger("Jump");
             m_grounded = false;
             m_animator.SetBool("Grounded", m_grounded);
-            //Add Horizontal Force to Opposite Direction
+
+            //Wall Jump
+            //Add Sideways Velocity to Opposite Direction
             if (m_isWallSliding) {
                 //AllowMovement();
-                m_body2d.velocity = new Vector2((-20 * m_facingDirection), m_body2d.velocity.y);
+                isWallJumping = true;
+                m_body2d.velocity = new Vector2((m_wallJumpForce * -m_facingDirection), m_body2d.velocity.y);
+                Debug.Log("Added force is:" + m_wallJumpForce * -m_facingDirection);
             }
-            //Add Velocity to Jump
+
+            //Add Upward Velocity to Jump
             m_body2d.velocity = new Vector2(m_body2d.velocity.x, m_jumpForce);
             m_groundSensor.Disable(0.2f);
             
@@ -337,14 +350,14 @@ public class HeroKnight : MonoBehaviour {
     }
 
     void FlipPlayerSprite()
-    { // Swap direction of sprite depending on walk direction
-        if (inputX > 0)
+    { // Swap direction of sprite depending on Player Velocity
+        if (m_body2d.velocity.x > 0)//(inputX > 0)
         {
             GetComponent<SpriteRenderer>().flipX = false;
             m_facingDirection = 1;
         }
 
-        else if (inputX < 0)
+        else if (m_body2d.velocity.x < 0)//(inputX < 0)
         {
             GetComponent<SpriteRenderer>().flipX = true;
             m_facingDirection = -1;
@@ -355,9 +368,19 @@ public class HeroKnight : MonoBehaviour {
         //Wall Slide
 
         //Check Wall Sensor and Ground
-        m_isWallSliding = (m_wallSensorR1.State() && m_wallSensorR2.State()) || (m_wallSensorL1.State() && m_wallSensorL2.State() && !m_grounded);
+        if (!m_grounded)
+        {
+            m_isWallSliding =
+                ((m_wallSensorR1.State() && m_wallSensorR2.State())
+                || (m_wallSensorL1.State() && m_wallSensorL2.State())
+                && !m_grounded && !isWallJumping);
+        }
+        else 
+        {
+            m_isWallSliding = false;
+                
+        };
         m_animator.SetBool("WallSlide", m_isWallSliding);
-
 
         //Disable Horizontal movement when wall sliding
         if (m_isWallSliding)
@@ -367,6 +390,20 @@ public class HeroKnight : MonoBehaviour {
         else if (!m_isWallSliding)
         {
             AllowMovement();
+        }
+
+        //WallJumping
+
+        // Increase timer that checks wall Jump duration
+        if (isWallJumping)
+            m_wallJumpCurrentTime += Time.deltaTime;
+
+        // Disable wallJumping state if timer extends duration or player is Wall Sliding
+        if ((m_wallJumpCurrentTime > m_wallJumpDuration) || (m_isWallSliding))
+        {
+            isWallJumping = false;
+            //Reset wallJump timer
+            m_wallJumpCurrentTime = 0f;
         }
 
 
@@ -390,6 +427,9 @@ public class HeroKnight : MonoBehaviour {
     }
 
     public void AllowMovement() {
-        allowMovement = true;
+        if (!isWallJumping)
+        {
+            allowMovement = true;
+        }
     }
 }

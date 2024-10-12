@@ -6,7 +6,7 @@ public class HeroKnight : MonoBehaviour {
     [SerializeField] float  m_speed = 4.0f;
     [SerializeField] float  m_jumpForce = 7.5f;
     [SerializeField] float  m_wallJumpForce = 4.0f;
-    [SerializeField] float  m_rollForce = 6.0f;   
+    [SerializeField] float  m_rollForce = 6.0f;
     [SerializeField] bool   m_noBlood = false;
     [SerializeField] GameObject m_slideDust;
 
@@ -18,7 +18,6 @@ public class HeroKnight : MonoBehaviour {
     private Sensor_HeroKnight m_wallSensorL1;
     private Sensor_HeroKnight m_wallSensorL2;
 
-
     private int m_facingDirection = 1;
     private int m_currentAttack = 0;
     private float m_delayToIdle = 0.0f;
@@ -28,15 +27,15 @@ public class HeroKnight : MonoBehaviour {
     private float m_rollDuration = 8.0f / 14.0f;
     private float m_rollCurrentTime;
     private float inputX;
-    
+
 
     //Attack Variables
-    public Transform    attackPoint;
-    public float        attackRange = 2f; // Player's attack range
-    public int          attackDamage = 20;
-    public float        attackCooldown = 1f; // Cooldown between Full Combo attacks
-    public float        attackInBetweenTime = 0.5f; //Interval between combo
-    
+    public Transform attackPoint;
+    public float attackRange = 2f; // Player's attack range
+    public int attackDamage = 20;
+    public float attackCooldown = 1f; // Cooldown between Full Combo attacks
+    public float attackInBetweenTime = 0.5f; //Interval between combo
+
     private float lastComboAttackTime = 0.0f; //Time between attacks of combo   
     private float lastAttackTime; // Time after full combo
     private float m_attackCurrentTime;
@@ -48,16 +47,16 @@ public class HeroKnight : MonoBehaviour {
 
     //Player States
     [Header("Player States")]
-    public bool playerIsDead    = false; //Track Player Dead State
-    public bool isBlocking      = false;
-    public bool isParry         = false;
-    public bool isAttacking     = false; // Track the player attacking state
-    public bool isWallJumping   = false; // Trach the player is wallJumping
-    [SerializeField] private bool m_isWallSliding   = false;
-    [SerializeField] private bool m_grounded        = false;
-    [SerializeField] private bool m_rolling         = false;   
-    [SerializeField] private bool allowMovement     = true;
-    
+    public bool playerIsDead = false; //Track Player Dead State
+    public bool isBlocking = false;
+    public bool isParry = false;
+    public bool isAttacking = false; // Track the player attacking state
+    public bool isWallJumping = false; // Trach the player is wallJumping
+    [SerializeField] private bool m_isWallSliding = false;
+    [SerializeField] private bool m_grounded = false;
+    [SerializeField] private bool m_rolling = false;
+    [SerializeField] private bool allowMovement = true;
+
     // Use this for initialization
     void Start()
     {
@@ -84,8 +83,8 @@ public class HeroKnight : MonoBehaviour {
     {
 
         // Increase timer that controls attack combo
-            lastComboAttackTime += Time.deltaTime;
- 
+        lastComboAttackTime += Time.deltaTime;
+
         // Increase timer that checks roll duration
         if (m_rolling)
             m_rollCurrentTime += Time.deltaTime;
@@ -127,32 +126,20 @@ public class HeroKnight : MonoBehaviour {
 
         HorizontalMovement();
 
-
         FlipPlayerSprite();
 
-
-        //Set AirSpeed in animator
-        m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
-
         WallSliding();
+       
+        if (isAttacking||isBlocking)
+        {
+            StopMovement();
+        }
 
-        // -- Handle Input --
-
+        // -- Handle Inputs --
         //Attack
         if (Input.GetMouseButtonDown(0) && m_grounded)
         {
             Attack();
-        }
-        //Release Attack Button
-        else if (Input.GetMouseButtonUp(0)) {
-
-            //isAttacking = false;
-            //AllowMovement();
-        }
-
-        if (isAttacking) {
-
-            StopMovement();
         }
 
         // Block
@@ -165,24 +152,16 @@ public class HeroKnight : MonoBehaviour {
         {
             ReleaseBlock();
         }
-        //stop movement when blocking
-        if (isBlocking) {
-            StopMovement();
-        }
-
         // Roll
         else if (Input.GetKeyDown("left shift"))
         {
             Roll();
         }
-
-
         //Jump
         else if (Input.GetKeyDown("space"))
         {
             Jump();
         }
-
         //Run Animation
         else if (Mathf.Abs(inputX) > Mathf.Epsilon)
         {
@@ -190,7 +169,6 @@ public class HeroKnight : MonoBehaviour {
             m_delayToIdle = 0.05f;
             m_animator.SetInteger("AnimState", 1);
         }
-
         //Idle Animation
         else
         {
@@ -199,6 +177,9 @@ public class HeroKnight : MonoBehaviour {
             if (m_delayToIdle < 0)
                 m_animator.SetInteger("AnimState", 0);
         }
+
+        //Set AirSpeed in animator
+        m_animator.SetFloat("AirSpeedY", m_body2d.velocity.y);
     }
 
     void Attack()

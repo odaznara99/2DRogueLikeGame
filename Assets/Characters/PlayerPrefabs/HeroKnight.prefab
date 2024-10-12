@@ -278,7 +278,7 @@ MonoBehaviour:
   attackPoint: {fileID: 1044468314279432416}
   attackRange: 1.12
   attackDamage: 35
-  attackCooldown: 1
+  attackCooldown: 0.5
   attackInBetweenTime: 0.25
   playerIsDead: 0
   isBlocking: 0

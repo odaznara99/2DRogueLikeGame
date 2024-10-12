@@ -293,13 +293,19 @@ public class HeroKnight : MonoBehaviour {
         }
     }
 
+    // Method to Trigger Jump Animation for other Objects like Bounding Platform
+    public void TriggerJumpAnimation() {
+        m_animator.SetTrigger("Jump");
+        m_grounded = false;
+        m_animator.SetBool("Grounded", m_grounded);
+
+    }
+
     void Jump() {
         //Check if on ground or wallsliding
         if ((m_grounded||m_isWallSliding) && !m_rolling)
         {
-            m_animator.SetTrigger("Jump");
-            m_grounded = false;
-            m_animator.SetBool("Grounded", m_grounded);
+            TriggerJumpAnimation();
 
             //Wall Jump
             //Add Sideways Velocity to Opposite Direction

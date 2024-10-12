@@ -1787,10 +1787,6 @@ PrefabInstance:
       propertyPath: healthText
       value: 
       objectReference: {fileID: 822758621}
-    - target: {fileID: 6839343557542277841, guid: fe787e14c46b2b1448be03607e8d0a4b, type: 3}
-      propertyPath: attackCooldown
-      value: 0.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

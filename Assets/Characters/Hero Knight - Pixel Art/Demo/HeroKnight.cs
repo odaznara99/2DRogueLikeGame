@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Cainos.LucidEditor;
 
 public class HeroKnight : MonoBehaviour {
 
-    [SerializeField] float  m_speed = 4.0f;
-    [SerializeField] float  m_jumpForce = 7.5f;
-    [SerializeField] float  m_wallJumpForce = 4.0f;
-    [SerializeField] float  m_rollForce = 6.0f;
-    [SerializeField] bool   m_noBlood = false;
+    [Header("Player Parameters")]
+    [SerializeField] float m_movementSpeed = 4.0f;
+    [SerializeField] float m_jumpForce = 7.5f;
+    [SerializeField] float m_wallJumpForce = 4.0f;
+    [SerializeField] float m_rollForce = 6.0f;
+    [SerializeField] bool m_noBlood = false;
+
+    [Header("Player Effects")]
     [SerializeField] GameObject m_slideDust;
 
     private Animator m_animator;
@@ -30,11 +34,12 @@ public class HeroKnight : MonoBehaviour {
 
 
     //Attack Variables
-    public Transform attackPoint;
-    public float attackRange = 2f; // Player's attack range
-    public int attackDamage = 20;
-    public float attackCooldown = 1f; // Cooldown between Full Combo attacks
-    public float attackInBetweenTime = 0.5f; //Interval between combo
+    [Header("Attack Parameters")]
+    public Transform    attackPoint;
+    public float        attackRange = 2f; // Player's attack range
+    public int          attackDamage = 20;
+    public float        attackCooldown = 1f; // Cooldown between Full Combo attacks
+    public float        attackInBetweenTime = 0.5f; //Interval between combo
 
     private float lastComboAttackTime = 0.0f; //Time between attacks of combo   
     private float lastAttackTime; // Time after full combo
@@ -46,16 +51,16 @@ public class HeroKnight : MonoBehaviour {
     private float m_wallJumpDuration = 0.8f;
 
     //Player States
-    [Header("Player States")]
-    public bool playerIsDead = false; //Track Player Dead State
-    public bool isBlocking = false;
-    public bool isParry = false;
-    public bool isAttacking = false; // Track the player attacking state
-    public bool isWallJumping = false; // Trach the player is wallJumping
-    [SerializeField] private bool m_isWallSliding = false;
-    [SerializeField] private bool m_grounded = false;
-    [SerializeField] private bool m_rolling = false;
-    [SerializeField] private bool allowMovement = true;
+    [Header("Track Player's State")]
+    public bool playerIsDead    = false; //Track Player Dead State
+    public bool isBlocking      = false;
+    public bool isParry         = false;
+    public bool isAttacking     = false; // Track the player attacking state
+    public bool isWallJumping   = false; // Trach the player is wallJumping
+    public bool m_isWallSliding = false;
+    public bool m_grounded      = false;
+    public bool m_rolling       = false;
+    public bool allowMovement   = true;
 
     // Use this for initialization
     void Start()
@@ -413,7 +418,7 @@ public class HeroKnight : MonoBehaviour {
         // Horizontal Movement on RigidBody using Input X
         if (!m_rolling && !isWallJumping)
         {
-            m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
+            m_body2d.velocity = new Vector2(inputX * m_movementSpeed, m_body2d.velocity.y);
         }
 
 

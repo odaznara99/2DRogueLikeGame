@@ -31,14 +31,16 @@ public class HeroKnight : MonoBehaviour {
     
 
     //Attack Variables
-    public Transform attackPoint;
-    public float attackRange = 2f; // Player's attack range
-    public int attackDamage = 20;
-    public float attackCooldown = 1f; // Cooldown between Full Combo attacks
-    public float attackInBetweenTime = 0.5f; //Time between attacks of combo
+    public Transform    attackPoint;
+    public float        attackRange = 2f; // Player's attack range
+    public int          attackDamage = 20;
+    public float        attackCooldown = 1f; // Cooldown between Full Combo attacks
+    public float        attackInBetweenTime = 0.5f; //Interval between combo
     
     private float lastComboAttackTime = 0.0f; //Time between attacks of combo   
     private float lastAttackTime; // Time after full combo
+    private float m_attackCurrentTime;
+    private float m_attackDuration = 0.4f;
 
     //WallJump Variables
     private float m_wallJumpCurrentTime;
@@ -82,8 +84,8 @@ public class HeroKnight : MonoBehaviour {
     {
 
         // Increase timer that controls attack combo
-        lastComboAttackTime += Time.deltaTime;
-
+            lastComboAttackTime += Time.deltaTime;
+ 
         // Increase timer that checks roll duration
         if (m_rolling)
             m_rollCurrentTime += Time.deltaTime;
@@ -95,6 +97,18 @@ public class HeroKnight : MonoBehaviour {
             upperBodyCollider.enabled = true;
             //Reset roll timer
             m_rollCurrentTime = 0f;
+        }
+
+        // Track time of Attack State
+        if (isAttacking)
+            m_attackCurrentTime += Time.deltaTime;
+
+        // Disable attack state if timer extends duration
+        if (m_attackCurrentTime > m_attackDuration)
+        {
+            isAttacking = false;
+            //Reset attack timer
+            m_attackCurrentTime = 0f;
         }
 
         //Check if character just landed on the ground
@@ -111,23 +125,8 @@ public class HeroKnight : MonoBehaviour {
             m_animator.SetBool("Grounded", m_grounded);
         }
 
-        // -- Handle input and movement --
-        if (!allowMovement)
-        {
-            inputX = 0;
-            //Retain current Horizontal Velocity
-            //inputX = m_body2d.velocity.x;
-        }
-        else if (allowMovement)
-        {
-            inputX = Input.GetAxis("Horizontal");
-        }
+        HorizontalMovement();
 
-        // Move RigidBody by Input X
-        if (!m_rolling && !isWallJumping)
-        {
-            m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
-        }
 
         FlipPlayerSprite();
 
@@ -147,8 +146,13 @@ public class HeroKnight : MonoBehaviour {
         //Release Attack Button
         else if (Input.GetMouseButtonUp(0)) {
 
-            isAttacking = false;
-            AllowMovement();
+            //isAttacking = false;
+            //AllowMovement();
+        }
+
+        if (isAttacking) {
+
+            StopMovement();
         }
 
         // Block
@@ -160,6 +164,10 @@ public class HeroKnight : MonoBehaviour {
         else if (Input.GetMouseButtonUp(1))
         {
             ReleaseBlock();
+        }
+        //stop movement when blocking
+        if (isBlocking) {
+            StopMovement();
         }
 
         // Roll
@@ -392,7 +400,7 @@ public class HeroKnight : MonoBehaviour {
             AllowMovement();
         }
 
-        //WallJumping
+        //WallJumping Tracker
 
         // Increase timer that checks wall Jump duration
         if (isWallJumping)
@@ -404,6 +412,27 @@ public class HeroKnight : MonoBehaviour {
             isWallJumping = false;
             //Reset wallJump timer
             m_wallJumpCurrentTime = 0f;
+        }
+
+
+    }
+
+    public void HorizontalMovement() {
+        // -- Handle input for movement --
+        if (!allowMovement)
+        {
+            inputX = 0;
+
+        }
+        else if (allowMovement)
+        {
+            inputX = Input.GetAxis("Horizontal");
+        }
+
+        // Horizontal Movement on RigidBody using Input X
+        if (!m_rolling && !isWallJumping)
+        {
+            m_body2d.velocity = new Vector2(inputX * m_speed, m_body2d.velocity.y);
         }
 
 

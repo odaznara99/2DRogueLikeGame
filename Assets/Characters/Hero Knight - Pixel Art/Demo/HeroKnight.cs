@@ -206,7 +206,7 @@ public class HeroKnight : MonoBehaviour {
                 // Release Block State
                 isBlocking = false;
                 //Stop Horizontal Movement
-                StopMovement();
+                //StopMovement();
 
                 // Find all nearby enemies within the attack range
                 Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange);
@@ -268,7 +268,7 @@ public class HeroKnight : MonoBehaviour {
     void Block() {
         if (!m_rolling && !isAttacking && m_grounded)
         {
-            StopMovement();
+            //StopMovement();
             StartCoroutine(Parry());
             m_animator.SetTrigger("Block");
             isBlocking = true;
@@ -371,15 +371,15 @@ public class HeroKnight : MonoBehaviour {
         if (!m_grounded)
         {
             m_isWallSliding =
-                ((m_wallSensorR1.State() && m_wallSensorR2.State())
-                || (m_wallSensorL1.State() && m_wallSensorL2.State())
-                && !m_grounded && !isWallJumping);
+                (   (m_wallSensorR1.State() && m_wallSensorR1.State() && m_facingDirection ==  1)
+                ||  (m_wallSensorL1.State() && m_wallSensorL1.State() && m_facingDirection == -1)
+                &&  !m_grounded && !isWallJumping);
         }
         else 
         {
-            m_isWallSliding = false;
-                
+            m_isWallSliding = false;           
         };
+
         m_animator.SetBool("WallSlide", m_isWallSliding);
 
         //Disable Horizontal movement when wall sliding
